@@ -1,7 +1,7 @@
 variable "name" {
   type        = string
   default     = null
-  description = "Name of the MariaDB server. If this input is not specified, a random ID is set as the name."
+  description = "Name of the server. If this input is not specified, a random ID is set as the name."
 }
 
 variable "resource_group_name" {
@@ -11,39 +11,19 @@ variable "resource_group_name" {
 
 # SKU
 variable "sku_name" {
-  default     = "B_Gen5_2"
+  default     = "B_Standard_B1ms"
   description = <<-EOT
-  (Required) Specifies the SKU Name for this MariaDB Server.
-  The name of the SKU, follows the tier + family + cores pattern (e.g. B_Gen4_1, GP_Gen5_8).
-  For more information see the product documentation.
-  Possible values are:
-  - B_Gen5_1
-  - B_Gen5_2
-  - GP_Gen5_2
-  - GP_Gen5_4
-  - GP_Gen5_8
-  - GP_Gen5_16
-  - GP_Gen5_32
-  - MO_Gen5_2
-  - MO_Gen5_4
-  - MO_Gen5_8
-  - MO_Gen5_16
+  The SKU Name for the PostgreSQL Flexible Server.
+  The name of the SKU, follows the tier + name pattern (e.g. B_Standard_B1ms, GP_Standard_D2s_v3, MO_Standard_E4s_v3
   EOT
 }
 
-variable "ssl_minimal_tls_version_enforced" {
+variable "zone" {
 
   type        = string
-  default     = "TLS1_2"
-  description = "The minimum TLS version to support on the sever. Possible values are TLSEnforcementDisabled, TLS1_0, TLS1_1, and TLS1_2. Defaults to TLS1_2."
+  default     = "1"
+  description = "Specifies the Availability Zone in which the PostgreSQL Flexible Server should be located"
 
-}
-
-variable "infrastructure_encryption_enabled" {
-
-  type        = bool
-  default     = false
-  description = "Whether or not infrastructure is encrypted for this server. Changing this forces a new resource to be created."
 }
 
 variable "storage" {
@@ -52,6 +32,7 @@ variable "storage" {
     size                  = number
     backup_retention_days = number
     geo_redundant_backup  = bool
+    iops                  = number
   })
 
   default = {
@@ -59,6 +40,7 @@ variable "storage" {
     size                  = 5120
     backup_retention_days = 30
     geo_redundant_backup  = false
+    iops                  = 1000
   }
 }
 
@@ -72,10 +54,6 @@ variable "engine_version" {
   default = "5.7"
 }
 
-variable "ssl_enforcement" {
-  type    = bool
-  default = true
-}
 
 variable "trusted_network_cidr" {
   type = map(string)
@@ -88,14 +66,6 @@ variable "trusted_network_cidr" {
   The key may only contain alphanumeric characters and underscores.
   EOT
 }
-
-
-variable "public_network_access_enabled" {
-  type        = bool
-  description = "Whether or not public network access is allowed for this server."
-  default     = true
-}
-
 
 variable "tags" {
   type        = map(string)
